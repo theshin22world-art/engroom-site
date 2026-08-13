@@ -852,7 +852,7 @@
       어느 날 자연스럽게 영어로 생각하고 있는 자신을 발견하게 될 거예요.<br><br>
       작은 팀이 진심을 담아 만들고 있습니다.
     </p>
-    <button class="contact-btn" onclick="window.location.href='mailto:vibivi.lab@gmail.com'">
+    <button class="contact-btn" onclick="openMailModal()">
       <svg width="16" height="16" viewBox="0 0 20 20" fill="none" style="flex-shrink:0">
         <rect x="2" y="5" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
         <path d="M2 7l8 5 8-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -954,6 +954,65 @@
   }, { threshold: 0.12 });
 
   revealEls.forEach(el => observer.observe(el));
+
+  // ── MAIL MODAL ──
+  function openMailModal() {
+    const modal = document.getElementById('mail-modal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    // 바깥 클릭시 닫기 — 모달이 존재할 때 등록
+    modal.onclick = function(e) {
+      if (e.target === modal) closeMailModal();
+    };
+  }
+  function closeMailModal() {
+    document.getElementById('mail-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  function sendMail() {
+    const subject = document.getElementById('mail-subject').value.trim();
+    const body = document.getElementById('mail-body').value.trim();
+    if (!subject || !body) {
+      alert('제목과 내용을 모두 입력해주세요.');
+      return;
+    }
+    const mailto = 'mailto:vibivi.lab@gmail.com'
+      + '?subject=' + encodeURIComponent(subject)
+      + '&body=' + encodeURIComponent(body);
+    window.location.href = mailto;
+    closeMailModal();
+  }
 </script>
+
+<!-- MAIL MODAL -->
+<div id="mail-modal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(58,46,36,.45); backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:24px;">
+  <div style="background:#FAF7EE; border-radius:20px; width:100%; max-width:480px; padding:36px 32px; box-shadow:0 24px 64px rgba(58,46,36,.18); position:relative;">
+    <!-- 닫기 버튼 -->
+    <button onclick="closeMailModal()" style="position:absolute; top:16px; right:16px; background:none; border:none; cursor:pointer; color:#7A6B58; font-size:20px; line-height:1; padding:4px;">✕</button>
+
+    <!-- 헤더 -->
+    <p style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#3f8f5d; letter-spacing:.08em; text-transform:uppercase; margin-bottom:8px;">Contact</p>
+    <h3 style="font-family:'Playfair Display',serif; font-size:22px; color:#3A2E24; margin-bottom:4px;">문의하기</h3>
+    <p style="font-size:13px; color:#7A6B58; margin-bottom:24px;">받는 사람: vibivi.lab@gmail.com</p>
+
+    <!-- 제목 -->
+    <div style="margin-bottom:14px;">
+      <label style="display:block; font-size:12px; color:#7A6B58; margin-bottom:6px; font-family:'IBM Plex Mono',monospace;">제목</label>
+      <input id="mail-subject" type="text" placeholder="문의 제목을 입력해주세요" style="width:100%; padding:12px 14px; border:1.5px solid #D8D2C0; border-radius:10px; background:#fff; font-family:'Noto Serif KR',serif; font-size:14px; color:#3A2E24; outline:none; transition:border-color .2s;" onfocus="this.style.borderColor='#3f8f5d'" onblur="this.style.borderColor='#D8D2C0'"/>
+    </div>
+
+    <!-- 내용 -->
+    <div style="margin-bottom:24px;">
+      <label style="display:block; font-size:12px; color:#7A6B58; margin-bottom:6px; font-family:'IBM Plex Mono',monospace;">내용</label>
+      <textarea id="mail-body" rows="5" placeholder="문의 내용을 입력해주세요" style="width:100%; padding:12px 14px; border:1.5px solid #D8D2C0; border-radius:10px; background:#fff; font-family:'Noto Serif KR',serif; font-size:14px; color:#3A2E24; outline:none; resize:vertical; transition:border-color .2s;" onfocus="this.style.borderColor='#3f8f5d'" onblur="this.style.borderColor='#D8D2C0'"></textarea>
+    </div>
+
+    <!-- 버튼 -->
+    <button onclick="sendMail()" style="width:100%; padding:14px; background:#3f8f5d; color:#FAF7EE; border:none; border-radius:12px; font-family:'Noto Serif KR',serif; font-size:15px; cursor:pointer; transition:background .2s;" onmouseover="this.style.background='#2d6b45'" onmouseout="this.style.background='#3f8f5d'">
+      메일 앱으로 전송하기
+    </button>
+  </div>
+</div>
+
 </body>
 </html>
