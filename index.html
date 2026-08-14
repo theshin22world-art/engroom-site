@@ -996,30 +996,67 @@
     sendBtn.disabled = true;
     sendBtn.textContent = '전송 중...';
 
+    /* ── 2026-08-13 쿠리만쥬 ────────────────────────────────
+       예전에는 Web3Forms 한 곳에만 보냈습니다. 화면에는 '전송 완료'가
+       뜨는데 정작 메일이 안 오는 일이 잦았습니다 — 그 회사 서버까지는
+       갔지만 지메일이 스팸으로 걸러버리면 문의가 그냥 사라집니다.
+       문의는 사라지면 안 되는 것이라, 순서를 바꿨습니다.
+
+         ① 잉룸 서버(Supabase)에 먼저 쌓는다  ← 이게 진짜 접수
+         ② 그다음 Web3Forms 로 알림 메일도 시도한다 (되면 좋고, 안 돼도 그만)
+
+       ①이 성공해야만 '전송 완료'를 띄웁니다. 이제 화면의 말과
+       실제로 남은 것이 어긋나지 않습니다.
+       ─────────────────────────────────────────────────── */
+    const SB_URL = 'https://nxyepegrxdspzntnhndf.supabase.co';
+    const SB_KEY = 'sb_publishable_GaRZZ0XuRt6YJmhP_ZQrlw_35jCUyeZ';
+
     try {
-      const res = await fetch('https://api.web3forms.com/submit', {
+      const res = await fetch(SB_URL + '/rest/v1/rpc/submit_contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SB_KEY,
+          'Authorization': 'Bearer ' + SB_KEY
+        },
+        body: JSON.stringify({ p_from: from, p_subject: subject, p_body: body })
+      });
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok || !data || data.ok !== true) {
+        const k = (data && data.error) || '';
+        throw new Error(
+          k === 'too_fast'    ? '방금 보내셨어요. 잠시 뒤에 다시 시도해주세요.'
+        : k === 'bad_email'   ? '이메일 형식을 확인해주세요.'
+        : k === 'bad_subject' ? '제목을 확인해주세요.'
+        : k === 'bad_body'    ? '내용을 확인해주세요.'
+        :                       '전송 실패');
+      }
+
+      /* 접수는 끝났다. 알림 메일은 되면 좋고 안 되면 그만이라
+         결과를 기다리지도, 실패를 알리지도 않는다. */
+      fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
           access_key: '59c9a8fc-df2f-47ec-9185-781cc635ea64',
           subject: `[잉룸 문의] ${subject}`,
           name: from,
-          email: from,
-          message: body,
+          from_name: '잉룸 홈페이지',
+          replyto: from,
+          message: `보낸 사람: ${from}\n\n${body}`,
           botcheck: ''
         })
-      });
-      const data = await res.json();
-      if (data.success) {
-        document.getElementById('mail-form-inner').style.display = 'none';
-        document.getElementById('mail-result').style.display = 'block';
-      } else {
-        throw new Error(data.message || '전송 실패');
-      }
+      }).catch(() => {});
+
+      document.getElementById('mail-form-inner').style.display = 'none';
+      document.getElementById('mail-result').style.display = 'block';
     } catch(e) {
-      errEl.textContent = '전송 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.';
-      console.error('[web3forms error]', e);
-    } finally {
+      errEl.textContent = (e && e.message && e.message !== '전송 실패')
+        ? e.message
+        : '전송 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.';
+      console.error('[contact]', e);
+  } finally {
       sendBtn.disabled = false;
       sendBtn.textContent = '보내기 →';
     }
