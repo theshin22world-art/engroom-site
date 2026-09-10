@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/ocanspic", "destination": "https://ocanspic-site.vercel.app/" },
+    { "source": "/ocanspic/:path*", "destination": "https://ocanspic-site.vercel.app/:path*" },
+    { "source": "/engroom", "destination": "/index.html" },
+    { "source": "/engroom/:path*", "destination": "/:path*" }
+  ]
+}
