@@ -27,7 +27,7 @@
      ★ 나중에 회사 사이트를 만들 때는
        아래 <meta refresh> 와 <link canonical> 두 줄만 지우고
        본문을 채우면 된다. 인증은 건드릴 필요가 없다. -->
-<meta http-equiv="refresh" content="0; url=/engroom/">
+<meta http-equiv="refresh" content="1; url=/engroom/">
 <link rel="canonical" href="https://www.vibivi.co.kr/engroom/">
 
 <style>
@@ -40,6 +40,14 @@
 <body>
   <p>잉룸으로 이동하고 있어요.<br>
      넘어가지 않으면 <a href="/engroom/">여기를 눌러주세요</a>.</p>
-  <script>location.replace('/engroom/');</script>
+  <script>
+    /* ⚠ 주소 뒤에 붙은 ?물음표 와 #샵 부분까지 같이 넘긴다.
+       비밀번호 재설정·이메일 확인 메일의 링크는 #access_token=... 처럼
+       샵 뒤에 열쇠를 달고 온다. 그냥 /engroom/ 으로만 보내면 그 열쇠가
+       중간에 떨어져 나가서 재설정이 통째로 실패한다.
+       위의 <meta refresh> 는 자바스크립트가 꺼진 경우를 위한 예비책이라
+       1초로 늦춰뒀다. 평소에는 이 줄이 먼저 실행된다. */
+    location.replace('/engroom/' + location.search + location.hash);
+  </script>
 </body>
 </html>
