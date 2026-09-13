@@ -1,8 +1,29 @@
 {
+  "redirects": [
+    {
+      "source": "/privacy.html",
+      "destination": "/engroom/privacy.html",
+      "permanent": false
+    },
+    {
+      "source": "/terms.html",
+      "destination": "/engroom/terms.html",
+      "permanent": false
+    },
+    {
+      "source": "/delete-account.html",
+      "destination": "/engroom/delete-account.html",
+      "permanent": false
+    }
+  ],
   "rewrites": [
-    { "source": "/ocanspic", "destination": "https://ocanspic-site.vercel.app/" },
-    { "source": "/ocanspic/:path*", "destination": "https://ocanspic-site.vercel.app/:path*" },
-    { "source": "/engroom", "destination": "/index.html" },
-    { "source": "/engroom/:path*", "destination": "/:path*" }
+    {
+      "source": "/ocanspic",
+      "destination": "https://ocanspic-site.vercel.app/"
+    },
+    {
+      "source": "/ocanspic/:path*",
+      "destination": "https://ocanspic-site.vercel.app/:path*"
+    }
   ]
 }
